@@ -3,6 +3,11 @@ name = "autoregressive"
 version = "0.1.0"
 authors = ["Fredrik Jansson <fj@avassa.io>"]
 edition = "2018"
+description = "Simple autoregressive model for generate series data"
+license = "Apache 2.0"
+repository="https://github.com/fredrik-jansson-se/autoregressive"
+documentation = "https://docs.rs/autoregressive"
+
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
