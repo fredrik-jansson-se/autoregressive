@@ -8,9 +8,6 @@ license = "Apache 2.0"
 repository="https://github.com/fredrik-jansson-se/autoregressive"
 documentation = "https://docs.rs/autoregressive"
 
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 num-traits = "0.2"
 rand="0.8"
