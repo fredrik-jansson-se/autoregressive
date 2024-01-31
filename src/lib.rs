@@ -3,15 +3,14 @@
 //! For more information, please see https://en.wikipedia.org/wiki/Autoregressive_model.
 //!
 //! ```
-//! fn main() {
-//!    let mut ar = autoregressive::univariate::Autoregressive::new(5.0, 1.0, &[0.5]);
+//! let mut ar = autoregressive::univariate::Autoregressive::new(0.0, 1.0, &[0.5]);
 //!
-//!    // Sample next value
-//!    let n = ar.step();
+//! // Sample next value
+//! let n = ar.step();
 //!
-//!    // Take 10 values as an iterator
-//!    let n10 = ar.into_iter().take(10).collect::<Vec<f32>>();
-//! }
+//! // Take 10 values as an iterator
+//! let n10 = ar.take(10).collect::<Vec<f32>>();
+//! ```
 
 /// Univariate AR model
 ///
@@ -45,7 +44,7 @@ pub mod univariate {
                 rand_distr::Normal::new(num_traits::identities::zero(), noise_variance).unwrap();
             Self {
                 c,
-                phi: phi.clone(),
+                phi: *phi,
                 x,
                 noise,
             }
@@ -63,8 +62,10 @@ pub mod univariate {
                     .map(|(x, p)| *x * *p)
                     .sum::<F>()
                 + epsilon;
-            self.x.rotate_right(1);
-            self.x[0] = new_x;
+            if !self.x.is_empty() {
+                self.x.rotate_right(1);
+                self.x[0] = new_x;
+            }
             new_x
         }
     }
@@ -79,5 +80,33 @@ pub mod univariate {
         fn next(&mut self) -> Option<Self::Item> {
             Some(self.step())
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    #[test]
+    fn bounded() {
+        const NUM: usize = 1_000_000;
+
+        let ar = super::univariate::Autoregressive::new(0.0, 1.0, &[]);
+        let avg = ar.take(NUM).sum::<f32>() / (NUM as f32);
+        assert!(avg.abs() < 1.0);
+
+        let ar = super::univariate::Autoregressive::new(0.0, 1.0, &[0.3]);
+        let avg = ar.take(NUM).sum::<f32>() / (NUM as f32);
+        assert!(avg.abs() < 1.0);
+
+        let ar = super::univariate::Autoregressive::new(0.0, 1.0, &[0.9]);
+        let avg = ar.take(NUM).sum::<f32>() / (NUM as f32);
+        assert!(avg.abs() < 1.0);
+
+        let ar = super::univariate::Autoregressive::new(0.0, 1.0, &[0.3, 0.3]);
+        let avg = ar.take(NUM).sum::<f32>() / (NUM as f32);
+        assert!(avg.abs() < 1.0);
+
+        let ar = super::univariate::Autoregressive::new(0.0, 1.0, &[0.9, -0.8]);
+        let avg = ar.take(NUM).sum::<f32>() / (NUM as f32);
+        assert!(avg.abs() < 1.0);
     }
 }
