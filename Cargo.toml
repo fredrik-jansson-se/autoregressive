@@ -1,6 +1,6 @@
 [package]
 name = "autoregressive"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["Fredrik Jansson <fj@avassa.io>"]
 edition = "2018"
 description = "Simple autoregressive model for generate series data"
